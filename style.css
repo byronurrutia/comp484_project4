@@ -1,9 +1,29 @@
 #map {
-  height: 100%;
+  height: 800px;
+  width: 100%;
+  border-radius: 5px;
+  margin: 20px;
 }
+
 html,
 body {
   height: 100%;
   margin: 0;
   padding: 0;
+}
+
+.location-1,
+.location-2,
+.location-3,
+.scoreCard {
+  display: none;
+}
+
+.thick {
+  font-weight: bold;
+}
+
+.scoreCard,
+.timerCard {
+  margin: 30px;
 }

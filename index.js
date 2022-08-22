@@ -1,6 +1,18 @@
 var map;
 var rectangles = [];
-var i = 0;
+var count = 0;
+var score = 0;
+
+var min = 0;
+var sec = 0;
+var csec = 0;
+var timeElapsed = 0;
+var timerOn = false;
+var formattedTimer;
+var functionTimer;
+const theTimer = document.querySelector(".timer");
+
+var scores = [];
 
 function initMap() {
   map = new google.maps.Map(document.getElementById("map"), {
@@ -51,16 +63,36 @@ function initMap() {
     },
   });
 
-  map.addListener("click", (e) => {
-    checkLocation(e.latLng, map, i);
-    if (i < 4) {
-      i++;
-    }
-  });
+  if (count < 4)
+    map.addListener("dblclick", (e) => {
+      if (timerOn !== true) started();
+      if (count < 4) {
+        checkLocation(e.latLng, map, count);
+        document.getElementById("location-" + count).classList.remove("active");
+        if (count + 1 < 4) {
+          document
+            .getElementById("location-" + (count + 1))
+            .classList.add("active");
+          document.getElementById("location-" + (count + 1)).style.display =
+            "block";
+        }
+        count++;
+        if (count === 4) {
+          timerOn = false;
+          clearInterval(functionTimer);
+          document.getElementById("scoreCard").style.display = "block";
+          document.getElementById("score").innerHTML =
+            score + "/4 in " + format();
+          var ratio = (score / 4) * timeElapsed;
+          var totalScore = [score, format, timeElapsed, ratio];
+          scores.push(totalScore);
+        }
+      }
+    });
 }
 
 function checkLocation(latLng, map, i) {
-  if (rectangles[i].getBounds().contains(latLng))
+  if (rectangles[i].getBounds().contains(latLng)) {
     rectangles[i].setOptions({
       strokeColor: "#00FF00",
       strokeOpacity: 0.8,
@@ -69,7 +101,9 @@ function checkLocation(latLng, map, i) {
       fillOpacity: 0.35,
       map,
     });
-  else if (!rectangles[i].getBounds().contains(latLng))
+    insertAfter(correctMsg(), document.getElementById("location-" + count));
+    score++;
+  } else if (!rectangles[i].getBounds().contains(latLng)) {
     rectangles[i].setOptions({
       strokeColor: "#FF0000",
       strokeOpacity: 0.8,
@@ -78,6 +112,57 @@ function checkLocation(latLng, map, i) {
       fillOpacity: 0.35,
       map,
     });
+    insertAfter(incorrectMsg(), document.getElementById("location-" + count));
+    if (score < 0) score--;
+  }
+}
+
+function insertAfter(newNode, referenceNode) {
+  referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+}
+
+function incorrectMsg() {
+  var incorrect = document.createElement("li");
+  incorrect.classList.add("list-group-item", "list-group-item-danger", "thick");
+  incorrect.textContent = "Sorry wrong location.";
+  return incorrect;
+}
+
+function correctMsg() {
+  var correct = document.createElement("li");
+  correct.classList.add("list-group-item", "list-group-item-success");
+  correct.textContent = "Your answer is correct!";
+  return correct;
+}
+
+function format() {
+  return (formattedTimer =
+    (min < 10 ? "0" + min : min) +
+    ":" +
+    (sec < 10 ? "0" + sec : sec) +
+    ":" +
+    (csec < 10 ? "0" + csec : csec));
+}
+
+function timerStart() {
+  functionTimer = setInterval(() => {
+    csec++;
+    timeElapsed++;
+    if (csec / 100 == 1) {
+      csec = 0;
+      sec++;
+    }
+    if (sec / 60 == 1) {
+      sec = 0;
+      min++;
+    }
+    theTimer.innerHTML = format();
+  }, 10);
+}
+
+function started() {
+  timerStart();
+  timerOn = true;
 }
 
 var styles = {
