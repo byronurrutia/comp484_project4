@@ -1,4 +1,6 @@
-let map;
+var map;
+var rectangles = [];
+var i = 0;
 
 function initMap() {
   map = new google.maps.Map(document.getElementById("map"), {
@@ -9,13 +11,8 @@ function initMap() {
   });
   map.setOptions({ styles: styles["hide"] });
 
-  const rectanglePPM = new google.maps.Rectangle({
-    strokeColor: "#FF0000",
-    strokeOpacity: 0.8,
-    strokeWeight: 2,
-    fillColor: "#FF0000",
-    fillOpacity: 0.35,
-    map,
+  rectangles[0] = new google.maps.Rectangle({
+    clickable: false,
     bounds: {
       north: 34.24468988421333,
       south: 34.24296929896279,
@@ -24,13 +21,8 @@ function initMap() {
     },
   });
 
-  const rectangleTennis = new google.maps.Rectangle({
-    strokeColor: "#FF0000",
-    strokeOpacity: 0.8,
-    strokeWeight: 2,
-    fillColor: "#FF0000",
-    fillOpacity: 0.35,
-    map,
+  rectangles[1] = new google.maps.Rectangle({
+    clickable: false,
     bounds: {
       north: 34.24433134740937,
       south: 34.24347105551596,
@@ -39,13 +31,8 @@ function initMap() {
     },
   });
 
-  const rectangleSRC = new google.maps.Rectangle({
-    strokeColor: "#FF0000",
-    strokeOpacity: 0.8,
-    strokeWeight: 2,
-    fillColor: "#FF0000",
-    fillOpacity: 0.35,
-    map,
+  rectangles[2] = new google.maps.Rectangle({
+    clickable: false,
     bounds: {
       north: 34.24035318202122,
       south: 34.239492849469016,
@@ -54,13 +41,8 @@ function initMap() {
     },
   });
 
-  const rectangleQuad = new google.maps.Rectangle({
-    strokeColor: "#FF0000",
-    strokeOpacity: 0.8,
-    strokeWeight: 2,
-    fillColor: "#FF0000",
-    fillOpacity: 0.35,
-    map,
+  rectangles[3] = new google.maps.Rectangle({
+    clickable: false,
     bounds: {
       north: 34.23894163574275,
       south: 34.238081288764825,
@@ -68,6 +50,34 @@ function initMap() {
       west: -118.52978806010337,
     },
   });
+
+  map.addListener("click", (e) => {
+    checkLocation(e.latLng, map, i);
+    if (i < 4) {
+      i++;
+    }
+  });
+}
+
+function checkLocation(latLng, map, i) {
+  if (rectangles[i].getBounds().contains(latLng))
+    rectangles[i].setOptions({
+      strokeColor: "#00FF00",
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: "#00FF00",
+      fillOpacity: 0.35,
+      map,
+    });
+  else if (!rectangles[i].getBounds().contains(latLng))
+    rectangles[i].setOptions({
+      strokeColor: "#FF0000",
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: "#FF0000",
+      fillOpacity: 0.35,
+      map,
+    });
 }
 
 var styles = {
