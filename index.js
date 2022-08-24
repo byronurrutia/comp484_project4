@@ -14,7 +14,9 @@ const theTimer = document.querySelector(".timer");
 
 var scores = [];
 
+// all google map stuff happens here
 function initMap() {
+  //setup the google maps and locations for your game; make sure it cant be revealed when hovered
   map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 34.24099357342392, lng: -118.52692382118829 },
     zoom: 15.5,
@@ -23,6 +25,7 @@ function initMap() {
   });
   map.setOptions({ styles: styles["hide"] });
 
+  //Physical Power Management building
   rectangles[0] = new google.maps.Rectangle({
     clickable: false,
     bounds: {
@@ -33,6 +36,7 @@ function initMap() {
     },
   });
 
+  //Tennis fields
   rectangles[1] = new google.maps.Rectangle({
     clickable: false,
     bounds: {
@@ -43,6 +47,7 @@ function initMap() {
     },
   });
 
+  //Student recreation center
   rectangles[2] = new google.maps.Rectangle({
     clickable: false,
     bounds: {
@@ -53,6 +58,7 @@ function initMap() {
     },
   });
 
+  //Sierra Quad
   rectangles[3] = new google.maps.Rectangle({
     clickable: false,
     bounds: {
@@ -63,12 +69,19 @@ function initMap() {
     },
   });
 
+  //check the round
   if (count < 4)
+    //check if the person double clicks in the map
     map.addListener("dblclick", (e) => {
+      //start the timer if it hasnt already started
       if (timerOn !== true) started();
+      //check if their hasnt been four rounds
       if (count < 4) {
+        //used dom element to manipulate the bootstrap classes and change the look
+        //check if the clicked area is in the game location
         checkLocation(e.latLng, map, count);
         document.getElementById("location-" + count).classList.remove("active");
+        //change the next round visuals
         if (count + 1 < 4) {
           document
             .getElementById("location-" + (count + 1))
@@ -77,6 +90,7 @@ function initMap() {
             "block";
         }
         count++;
+        //wjem the game ends, show the score
         if (count === 4) {
           timerOn = false;
           clearInterval(functionTimer);
@@ -91,6 +105,7 @@ function initMap() {
     });
 }
 
+//check the location if it contains and see if it hits(green) or not(red)
 function checkLocation(latLng, map, i) {
   if (rectangles[i].getBounds().contains(latLng)) {
     rectangles[i].setOptions({
@@ -117,10 +132,12 @@ function checkLocation(latLng, map, i) {
   }
 }
 
+//insert the win or loss message after the round ui
 function insertAfter(newNode, referenceNode) {
   referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 }
 
+//loss msg
 function incorrectMsg() {
   var incorrect = document.createElement("li");
   incorrect.classList.add("list-group-item", "list-group-item-danger", "thick");
@@ -128,6 +145,7 @@ function incorrectMsg() {
   return incorrect;
 }
 
+//win msg
 function correctMsg() {
   var correct = document.createElement("li");
   correct.classList.add("list-group-item", "list-group-item-success");
@@ -135,6 +153,7 @@ function correctMsg() {
   return correct;
 }
 
+//format timer with 2 digits in each section
 function format() {
   return (formattedTimer =
     (min < 10 ? "0" + min : min) +
@@ -144,6 +163,7 @@ function format() {
     (csec < 10 ? "0" + csec : csec));
 }
 
+//start the timer with the units of min/sec/csec
 function timerStart() {
   functionTimer = setInterval(() => {
     csec++;
@@ -160,11 +180,13 @@ function timerStart() {
   }, 10);
 }
 
+//start and turn on timer
 function started() {
   timerStart();
   timerOn = true;
 }
 
+//json map styling
 var styles = {
   hide: [
     {
